@@ -116,7 +116,7 @@
               <li class="mb-1"><span class="badge bg-primary-subtle text-primary">Por piso</span> 6 habitaciones</li>
               <li class="mb-1"><span class="badge bg-primary-subtle text-primary">Total</span> 30 habitaciones</li>
             </ul>
-            <a href="#" class="btn btn-outline-primary">Ver detalle</a>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detalleTurista"> Ver detalle </button>
           </div>
         </div>
       </div>
@@ -133,15 +133,12 @@
               <li class="mb-1"><span class="badge bg-warning-subtle text-warning">Por piso</span> 4 habitaciones</li>
               <li class="mb-1"><span class="badge bg-warning-subtle text-warning">Total</span> 8 habitaciones</li>
             </ul>
-            <a href="#" class="btn btn-outline-warning">Ver detalle</a>
+            <button class="btn btn-primary"data-bs-toggle="modal" data-bs-target="#detallePremium">Ver detalle</button>
           </div>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- Distribución por piso -->
-  <!-- ...existing code... -->
 
   <!-- Footer -->
   <footer class="container py-4">
@@ -156,4 +153,90 @@
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
+
+<!-- Modal Turista -->
+<div class="modal fade" id="detalleTurista" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Habitación Turista</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <img src="img/foto2.png" class="img-fluid rounded" alt="Habitación Turista">
+          </div>
+          <div class="col-md-6">
+            <h6>Características principales:</h6>
+            <ul>
+              <li>Cama Queen</li>
+              <li>Vista al mar</li>
+              <li>Baño privado con ducha</li>
+              <li>Capacidad 2 personas</li>
+            </ul>
+
+            <h6>Servicios incluidos:</h6>
+            <ul>
+              <li>Wi-Fi gratuito</li>
+              <li>Desayuno continental</li>
+              <li>TV por cable</li>
+              <li>Aire acondicionado</li>
+            </ul>
+
+            <p class="fw-bold mt-2">Tarifa: $90 USD / noche</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary">Reservar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Premium -->
+<div class="modal fade" id="detallePremium" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Habitación Premium</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <img src="img/foto7.png" class="img-fluid rounded" alt="Habitación Premium">
+          </div>
+          <div class="col-md-6">
+            <h6>Características principales:</h6>
+            <ul>
+              <li>Cama King</li>
+              <li>Balcón privado con vista panorámica</li>
+              <li>Jacuzzi en baño privado</li>
+              <li>Capacidad 4 personas</li>
+            </ul>
+
+            <h6>Servicios incluidos:</h6>
+            <ul>
+              <li>Wi-Fi de alta velocidad</li>
+              <li>Desayuno buffet</li>
+              <li>Mini bar</li>
+              <li>Servicio a la habitación 24h</li>
+            </ul>
+
+            <p class="fw-bold mt-2">Tarifa: $180 USD / noche</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary">Reservar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </html>
