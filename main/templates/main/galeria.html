@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hotel Pacific Reef – Fotos</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'styles/styles.css' %}" />
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-dark sticky-top">
+    <div class="container">
+      <!-- Marca -->
+      <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+        <img src="" style="max-width:40px;height:auto" alt="" />
+        <span class="ms-2 fw-bold text-light">Hotel Pacific Reef</span>
+      </a>
+
+      <div class="ms-auto d-flex align-items-center gap-2">
+        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Iniciar Sesion</a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNav"
+                aria-controls="mainNav" aria-expanded="false" aria-label="Menú">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
+
+      <!-- Menú colapsable -->
+      <div id="mainNav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'registro' %}">Registro</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'habitaciones' %}">Habitaciones</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'galeria' %}">Galería</a></li>
+          <li class="nav-item"><a class="nav-link active" href="{% url 'login' %}">Iniciar sesión</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Encabezado -->
+  <header class="container py-5">
+    <div class="row align-items-center g-4">
+      <div class="col-12 col-lg-7">
+        <h1 class="fw-bold text-primary mb-2">Galería de habitaciones</h1>
+        <p class="text-secondary mb-0">
+          Conoce nuestras habitaciones de <strong>categoría Turista</strong> y <strong>categoría Premium</strong>. Haz clic en cualquier imagen para ampliarla.</p>
+      </div>
+      <div class="col-12 col-lg-5">
+      </div>
+    </div>
+  </header>
+
+  <!-- Galería Turista -->
+  <section class="container pb-5">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="h4 mb-0">Categoría Turista</h2>
+      <span class="badge ms-2 bg-primary">Turista</span>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+      <!-- Reemplaza las rutas por tus imágenes locales en /img -->
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto1.png' %}">
+          <img src="{% static 'img/foto1.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Turista 01">
+        </a>
+      </div>
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto2.png' %}">
+          <img src="{% static 'img/foto2.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Turista 02">
+        </a>
+      </div>
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto3.png' %}">
+          <img src="{% static 'img/foto3.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Turista 03">
+        </a>
+      </div>
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto4.png' %}">
+          <img src="{% static 'img/foto4.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Turista 04">
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Galería Premium -->
+  <section class="container pb-5">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="h4 mb-0">Categoría Premium</h2>
+      <span class="badge ms-2 bg-warning text-dark">Premium</span>
+    </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto5.png' %}">
+          <img src="{% static 'img/foto5.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Premium 01">
+        </a>
+      </div>
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto6.png' %}">
+          <img src="{% static 'img/foto6.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Premium 02">
+        </a>
+      </div>
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto7.png' %}">
+          <img src="{% static 'img/foto7.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Premium 03">
+        </a>
+      </div>
+      <div class="col">
+        <a class="gallery-tile ratio ratio-4x3" data-bs-toggle="modal" data-bs-target="#viewerModal" data-viewer-src="{% static 'img/foto8.png' %}">
+          <img src="{% static 'img/foto8.png' %}" class="w-100 h-100 object-fit-cover" alt="Habitación Premium 04">
+        </a>
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- Modal visor -->
+  <div class="modal fade" id="viewerModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 rounded-4 shadow">
+        <button type="button" class="btn-close ms-auto me-2 mt-2" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="modal-body p-0">
+          <img id="viewerImg" src="" alt="Foto habitación" class="w-100 h-auto rounded-bottom-4">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+    <!-- Footer -->
+  <footer class="container pb-4 pt-3">
+    <div class="text-center text-secondary small">
+      © <span id="year"></span> Hotel Pacific Reef
+    </div>
+  </footer>
+
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Lógica de la galería -->
+  <script src="{% static 'js/galeria.js' %}" defer></script>
+</body>
+</html>
+</html>

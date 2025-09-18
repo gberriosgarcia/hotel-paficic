@@ -8,10 +8,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const passInput = document.getElementById('loginPass');
 
   if (toggleBtn && passInput) {
-    toggleBtn.addEventListener('click', () => {
-      const showing = passInput.type === 'text';
-      passInput.type = showing ? 'password' : 'text';
-      toggleBtn.textContent = showing ? 'Mostrar' : 'Ocultar';
+    toggleBtn.addEventListener('click', function () {
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        toggleBtn.textContent = 'Ocultar';
+      } else {
+        passInput.type = 'password';
+        toggleBtn.textContent = 'Mostrar';
+      }
       passInput.focus();
     });
   }
