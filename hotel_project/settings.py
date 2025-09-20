@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'main',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +55,7 @@ ROOT_URLCONF = 'hotel_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'main' / 'templates'],
+        'DIRS': [ BASE_DIR / 'main' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -74,8 +75,15 @@ WSGI_APPLICATION = 'hotel_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'hotel_pacific',      # <- el nombre exacto de la BD ya creada
+        'USER': 'root',
+        'PASSWORD': 'Unicornio1',
+        'HOST': '127.0.0.1',            # o la IP/host de tu servidor MySQL
+        'PORT': '3306',                 # puerto por defecto
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 

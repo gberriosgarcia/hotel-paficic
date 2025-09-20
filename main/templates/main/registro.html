@@ -67,7 +67,7 @@
                 <p class="text-secondary m-0">Ingresa tus datos para registrarte</p>
               </div>
 
-              <form method="post" name="formRegistro" action="">
+              <form method="post" name="formRegistro" action="{% url 'registro' %}">
                 {% csrf_token %}
                 <div class="mb-3">
                   <input type="text" class="form-control" name="firstName" id="firstName" required placeholder="Nombre *" />
@@ -76,7 +76,7 @@
                   <input type="text" class="form-control" name="lastName" id="lastName" required placeholder="Apellido *" />
                 </div>
                 <div class="mb-3">
-                  <input type="text" class="form-control" name="username" id="username" required placeholder="Usuario *" />
+                  <input type="tel" class="form-control" name="phone" id="phone" required placeholder="Teléfono *" pattern="[0-9+\(\)\s\-]{7,20}">
                 </div>
                 <div class="mb-3">
                   <input type="email" class="form-control" name="email" id="email" required placeholder="E-mail *" />
