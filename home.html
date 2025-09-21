@@ -10,24 +10,27 @@
   <link rel="stylesheet" href="{% static 'styles/styles.css' %}" />
 </head>
 <body class="bg-light">
-<!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark sticky-top">
-    <div class="container">
-      <!-- Marca -->
-      <a class="navbar-brand d-flex align-items-center" href="home.html">
-        <img src="" style="max-width:40px;height:auto" alt="" />
-        <span class="ms-2 fw-bold text-light">Hotel Pacific Reef</span>
-      </a>
 
-    
-      <div class="ms-auto d-flex align-items-center gap-2">
-        <a href="login.html" class="btn btn-outline-light btn-sm">Iniciar Sesion</a>
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse" data-bs-target="#mainNav"
-                aria-controls="mainNav" aria-expanded="false" aria-label="Menú">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
+  
+<!-- Navbar -->
+<div class="ms-auto d-flex align-items-center gap-2">
+  {% if current_user %}
+    <span class="text-light me-2">Bienvenido @{{ current_user.nombre }}</span>
+    <!-- Botón Cerrar sesión → usar POST por seguridad -->
+    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+      {% csrf_token %}
+      <button class="btn btn-outline-light btn-sm" type="submit">Cerrar sesión</button>
+    </form>
+  {% else %}
+    <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Iniciar Sesion</a>
+  {% endif %}
+
+  <button class="navbar-toggler" type="button"
+          data-bs-toggle="collapse" data-bs-target="#mainNav"
+          aria-controls="mainNav" aria-expanded="false" aria-label="Menú">
+      <span class="navbar-toggler-icon"></span>
+  </button>
+</div>
 
       <!-- Menú colapsable -->
       <div id="mainNav" class="collapse navbar-collapse">

@@ -14,9 +14,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from xml.etree.ElementInclude import include
+
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from main import views
 
 urlpatterns = [
@@ -26,5 +26,6 @@ urlpatterns = [
     path('habitaciones/', views.habitaciones, name='habitaciones'),
     path('galeria/', views.galeria, name='galeria'),
     path('login/', views.login, name='login'),
+
 ]
 

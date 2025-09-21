@@ -21,48 +21,43 @@ def login(request):
 	return render(request, 'main/login.html')
 
 
+
 def registro(request):
     if request.method == 'POST':
         nombre   = request.POST.get('firstName', '').strip()
-        apellido = request.POST.get('lastName', '').strip()   # opcional: concatenar con nombre
+        apellido = request.POST.get('lastName', '').strip()
         telefono = request.POST.get('phone', '').strip()
         email    = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '')
         password2= request.POST.get('password2', '')
 
-        # Validaciones básicas
         if not (nombre and email and password and password2):
             messages.error(request, "Completa todos los campos obligatorios.")
-            return render(request, 'registro.html')
+            return render(request, 'main/registro.html')
 
         if password != password2:
             messages.error(request, "Las contraseñas no coinciden.")
-            return render(request, 'registro.html')
+            return render(request, 'main/registro.html')
 
-        # Puedes aplicar validación adicional (regex teléfono, email)
-        # Guardar en la tabla usuarios: concateno apellido al nombre si deseas
         nombre_completo = f"{nombre} {apellido}".strip()
 
         try:
-            hashed = make_password(password)  # usa el hasher de Django (PBKDF2 por defecto)
+            hashed = make_password(password)
 
-            # Usar transacción para mayor seguridad
             with transaction.atomic():
-                u = Usuario.objects.create(
+                Usuario.objects.create(
                     nombre=nombre_completo,
                     email=email,
                     telefono=telefono,
-                    rol='CLIENTE',            # por defecto
+                    rol='CLIENTE',
                     password_hash=hashed
                 )
 
             messages.success(request, "Registro exitoso. Por favor inicia sesión.")
             return redirect('login')
 
-        except IntegrityError as e:
-            # Maneja duplicados (email único en la BD) o violaciones FK
-            messages.error(request, "Ya existe un usuario con ese correo / teléfono.")
-            return render(request, 'registro.html')
+        except IntegrityError:
+            messages.error(request, "Ya existe un usuario con ese correo o teléfono.")
+            return render(request, 'main/registro.html')
 
-    # GET
     return render(request, 'main/registro.html')

@@ -1,0 +1,38 @@
+<!-- main/templates/main/navbar_fragment.html -->
+{% load static %}
+<nav class="navbar navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+      <img src="{% static 'img/logo.png' %}" style="max-width:40px;height:auto" alt="" />
+      <span class="ms-2 fw-bold text-light">Hotel Pacific Reef</span>
+    </a>
+
+    <div class="ms-auto d-flex align-items-center gap-2">
+      {% if current_user %}
+        <span class="text-light me-2">Bienvenido {{ current_user_first_name|default:current_user.nombre }}</span>
+
+        <form method="post" action="{% url 'logout' %}" style="display:inline;">
+          {% csrf_token %}
+          <button class="btn btn-outline-light btn-sm" type="submit">Cerrar sesión</button>
+        </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Iniciar Sesión</a>
+      {% endif %}
+
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNav"
+              aria-controls="mainNav" aria-expanded="false" aria-label="Menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+
+    <div id="mainNav" class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'registro' %}">Registro</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'habitaciones' %}">Habitaciones</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'galeria' %}">Galería</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
