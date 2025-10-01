@@ -1,95 +1,74 @@
-from django.shortcuts import render
-# usuarios/views.py
+# usuarios/views.py (reemplaza login_view por esto - DEBUG temporal)
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.db import IntegrityError, transaction
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import check_password
 from .models import Usuario
-
-def registro(request):
-    if request.method == 'POST':
-        nombre   = request.POST.get('firstName', '').strip()
-        apellido = request.POST.get('lastName', '').strip()
-        telefono = request.POST.get('phone', '').strip()
-        email    = request.POST.get('email', '').strip().lower()
-        password = request.POST.get('password', '')
-        password2= request.POST.get('password2', '')
-
-        if not (nombre and email and password and password2):
-            messages.error(request, "Completa todos los campos obligatorios.")
-            return render(request, 'main/registro.html')
-
-        if password != password2:
-            messages.error(request, "Las contraseñas no coinciden.")
-            return render(request, 'main/registro.html')
-
-        nombre_completo = f"{nombre} {apellido}".strip()
-
-        try:
-            hashed = make_password(password)
-
-            with transaction.atomic():
-                Usuario.objects.create(
-                    nombre=nombre_completo,
-                    email=email,
-                    telefono=telefono,
-                    rol='CLIENTE',
-                    password_hash=hashed
-                )
-
-            messages.success(request, "Registro exitoso. Por favor inicia sesión.")
-            return redirect('login')
-
-        except IntegrityError:
-            messages.error(request, "Ya existe un usuario con ese correo o teléfono.")
-            return render(request, 'main/registro.html')
-
-    return render(request, 'main/registro.html')
-
+from django.contrib.auth.views import LoginView
 
 def login_view(request):
-    """Vista de login: acepta email (o teléfono si quieres), valida y crea sesión."""
+    debug = {'step': None, 'identifier': None, 'found_user': False, 'check_password': None, 'session_before': None}
+    debug['session_before'] = dict(request.session)
+
     if request.method == 'POST':
-        # Leemos los campos del formulario (coinciden con la plantilla que te doy abajo)
-        email = request.POST.get('email', '').strip().lower()
-        password = request.POST.get('password', '')
+        identifier = (request.POST.get('email') or '').strip()
+        password = request.POST.get('password') or ''
+        debug['step'] = 'POST received'
+        debug['identifier'] = identifier
 
-        # Puedes permitir login por teléfono si quieres:
-        # If email contiene '@' -> buscar por email, else buscar por telefono
+        if not identifier or not password:
+            debug['step'] = 'missing fields'
+            messages.error(request, "Completa email y contraseña.")
+            return render(request, 'main/login.html', {'debug': debug})
+
+        # buscar por email o telefono
         user = None
-        if email:
-            try:
-                if '@' in email:
-                    user = Usuario.objects.get(email=email)
-                else:
-                    user = Usuario.objects.get(telefono=email)
-            except Usuario.DoesNotExist:
-                user = None
-
-        if not user:
+        try:
+            if '@' in identifier:
+                user = Usuario.objects.get(email=identifier.lower())
+            else:
+                user = Usuario.objects.get(telefono=identifier)
+            debug['found_user'] = True
+            debug['user_id'] = user.id
+        except Usuario.DoesNotExist:
+            debug['step'] = 'user not found'
             messages.error(request, "Credenciales inválidas.")
-            return render(request, 'main/login.html')
+            return render(request, 'main/login.html', {'debug': debug})
 
-        if check_password(password, user.password_hash):
-            # Guardamos datos mínimo en sesión
+        # verificar contraseña
+        try:
+            ok = check_password(password, user.password_hash)
+            debug['check_password'] = ok
+        except Exception as e:
+            debug['check_password'] = f'error: {e}'
+            ok = False
+
+        if ok:
             request.session['user_id'] = user.id
             request.session['user_name'] = user.nombre
-            # Opcional: tiempo de expiración (segundos). Por defecto usa SESSION_COOKIE_AGE
-            # request.session.set_expiry(86400)
+            debug['session_after'] = dict(request.session)
             messages.success(request, f"Bienvenido {user.nombre.split()[0]}!")
+            print("DEBUG LOGIN OK:", debug)
             return redirect('home')
         else:
+            debug['step'] = 'invalid password'
             messages.error(request, "Credenciales inválidas.")
-            return render(request, 'main/login.html')
+            print("DEBUG LOGIN FAIL:", debug)
+            return render(request, 'main/login.html', {'debug': debug})
 
+    # GET
     return render(request, 'main/login.html')
 
 
-def logout_view(request):
-    """Cerrar sesión mediante POST para seguridad."""
-    if request.method == 'POST':
-        request.session.flush()
-        messages.info(request, "Has cerrado sesión.")
-        return redirect('home')
-    return redirect('home')
+class EmailLoginView(LoginView):
+    template_name = 'usuarios/login.html'
 
+    def form_valid(self, form):
+        # login ya ejecutado por super
+        remember = self.request.POST.get('rememberMe')
+        # si el usuario NO marcó 'remember', expirar al cerrar navegador
+        if not remember:
+            self.request.session.set_expiry(0)
+        else:
+            # Duración en segundos (ejemplo: 2 semanas)
+            self.request.session.set_expiry(1209600)
+        return super().form_valid(form)

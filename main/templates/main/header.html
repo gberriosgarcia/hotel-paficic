@@ -1,15 +1,15 @@
-<!-- main/templates/main/navbar_fragment.html -->
 {% load static %}
 <nav class="navbar navbar-dark bg-dark sticky-top">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-      <img src="{% static 'img/logo.png' %}" style="max-width:40px;height:auto" alt="" />
       <span class="ms-2 fw-bold text-light">Hotel Pacific Reef</span>
     </a>
 
     <div class="ms-auto d-flex align-items-center gap-2">
-      {% if current_user %}
-        <span class="text-light me-2">Bienvenido {{ current_user_first_name|default:current_user.nombre }}</span>
+      {% if request.user.is_authenticated %}
+        <span class="text-light me-2">
+          Bienvenido {{ request.user.first_name|default:request.user.email|default:request.user.username }}
+        </span>
 
         <form method="post" action="{% url 'logout' %}" style="display:inline;">
           {% csrf_token %}

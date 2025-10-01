@@ -20,6 +20,10 @@ def galeria(request):
 def login(request):
 	return render(request, 'main/login.html')
 
+def reservar(request):
+	return render(request, 'main/reservar.html')
+
+
 
 
 def registro(request):
@@ -30,6 +34,7 @@ def registro(request):
         email    = request.POST.get('email', '').strip().lower()
         password = request.POST.get('password', '')
         password2= request.POST.get('password2', '')
+        
 
         if not (nombre and email and password and password2):
             messages.error(request, "Completa todos los campos obligatorios.")
@@ -61,3 +66,12 @@ def registro(request):
             return render(request, 'main/registro.html')
 
     return render(request, 'main/registro.html')
+
+
+
+def reservar(request):
+    if request.method == 'POST':
+        # Obtén los datos con request.POST.get('campo')
+        # Guarda en la BD y redirige a una página de éxito
+        ...
+    return render(request, 'main/reservar.html')

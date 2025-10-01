@@ -12,7 +12,6 @@
 
   {% include 'main/header.html' %}
 
-  <!-- Contenido -->
   <main class="container py-5">
     <div class="row justify-content-center">
       <div class="col-12 col-md-8 col-lg-5">
@@ -23,21 +22,35 @@
 
             {% if messages %}
               {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{% if message %}{{ message }}{% endif %}</div>
+                {% if message.tags == 'error' %}
+                  <div class="alert alert-danger">{{ message }}</div>
+                {% elif message.tags == 'warning' %}
+                  <div class="alert alert-warning">{{ message }}</div>
+                {% elif message.tags == 'success' %}
+                  <div class="alert alert-success">{{ message }}</div>
+                {% else %}
+                  <div class="alert alert-info">{{ message }}</div>
+                {% endif %}
               {% endfor %}
             {% endif %}
 
-            <form method="post" action="{% url 'login' %}" name="formLogin" novalidate>
+            <form method="post" action="{% url 'login' %}">
               {% csrf_token %}
+
               <div class="mb-3">
-                <label for="email" class="form-label small text-secondary">Email o Teléfono</label>
-                <input type="text" class="form-control" id="email" name="email" required placeholder="ej: juan@correo.com o +569XXXXXXXX" />
+                <label for="id_email" class="form-label small text-secondary">Email</label>
+                <!-- name="username" -> LoginView envía a authenticate() como username -->
+                <input type="email" class="form-control" id="id_email" name="username"
+                       required placeholder="ej: juan@correo.com"
+                       autocomplete="email"
+                       value="{{ request.POST.username|default:'' }}" />
               </div>
 
               <div class="mb-3">
-                <label for="password" class="form-label small text-secondary">Contraseña</label>
+                <label for="loginPass" class="form-label small text-secondary">Contraseña</label>
                 <div class="input-group">
-                  <input type="password" class="form-control" id="password" name="password" required placeholder="Tu contraseña" />
+                  <input type="password" class="form-control" id="loginPass" name="password"
+                         required placeholder="Tu contraseña" autocomplete="current-password" />
                   <button type="button" class="btn btn-outline-secondary" id="togglePass">Mostrar</button>
                 </div>
               </div>
@@ -49,6 +62,11 @@
                 </div>
                 <a href="#" class="small">¿Olvidaste tu contraseña?</a>
               </div>
+
+              <!-- Soporte 'next' -->
+              {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+              {% endif %}
 
               <button type="submit" class="btn btn-primary w-100">Entrar</button>
 
@@ -63,7 +81,6 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="container py-4">
     <div class="text-center text-secondary small">
       © <span id="year"></span> Hotel Pacific Reef · Todos los derechos reservados
@@ -72,5 +89,21 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{% static 'js/login.js' %}" defer></script>
+  <script>
+    // Mostrar año
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Toggle mostrar contraseña (si tienes login.js ya puede hacerlo)
+    document.addEventListener('DOMContentLoaded', function(){
+      const btn = document.getElementById('togglePass');
+      const pass = document.getElementById('loginPass');
+      if(btn && pass){
+        btn.addEventListener('click', function(){
+          if(pass.type === 'password'){ pass.type = 'text'; btn.textContent = 'Ocultar'; }
+          else { pass.type = 'password'; btn.textContent = 'Mostrar'; }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
