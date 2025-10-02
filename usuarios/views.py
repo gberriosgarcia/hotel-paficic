@@ -72,3 +72,20 @@ class EmailLoginView(LoginView):
             # Duración en segundos (ejemplo: 2 semanas)
             self.request.session.set_expiry(1209600)
         return super().form_valid(form)
+    
+    # usuarios/views.py
+from django.contrib.auth.views import LoginView
+from .forms import EmailAuthenticationForm
+
+class EmailLoginView(LoginView):
+    template_name = 'usuarios/login.html'
+    authentication_form = EmailAuthenticationForm
+
+    def form_valid(self, form):
+        # 'rememberMe' opcional
+        remember = self.request.POST.get('rememberMe')
+        if not remember:
+            self.request.session.set_expiry(0)
+        else:
+            self.request.session.set_expiry(1209600)  # 2 semanas
+        return super().form_valid(form)

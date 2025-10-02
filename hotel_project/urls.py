@@ -15,9 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+# hotel_project/urls.py
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
 from main import views
+from usuarios.views import EmailLoginView  # <- importa tu vista
+from django.contrib.auth.views import LogoutView 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,9 +28,10 @@ urlpatterns = [
     path('registro/', views.registro, name='registro'),
     path('habitaciones/', views.habitaciones, name='habitaciones'),
     path('galeria/', views.galeria, name='galeria'),
-    path('login/', views.login, name='login'),
+    path('login/', EmailLoginView.as_view(), name='login'),  # <- aquí el cambio
     path('reservar/', views.reservar, name='reservar'),
-
-
+    path('login/', EmailLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),  # <-- ESTA LÍNEA
 ]
+
 

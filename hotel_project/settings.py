@@ -135,7 +135,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Autenticación por email (añadir):
 AUTHENTICATION_BACKENDS = [
     'usuarios.auth_backend.EmailBackend',          # backend por email
-    'django.contrib.auth.backends.ModelBackend',  # fallback
+    'django.contrib.auth.backends.ModelBackend',
+    'usuarios.auth_backend.UsuarioEmailBackend',
+    'django.contrib.auth.backends.ModelBackend',# fallback
 ]
 
 # Redirecciones después de login/logout

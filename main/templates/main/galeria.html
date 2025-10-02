@@ -13,35 +13,7 @@
 <body class="bg-light">
 
   <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark sticky-top">
-    <div class="container">
-      <!-- Marca -->
-      <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-        <img src="" style="max-width:40px;height:auto" alt="" />
-        <span class="ms-2 fw-bold text-light">Hotel Pacific Reef</span>
-      </a>
-
-      <div class="ms-auto d-flex align-items-center gap-2">
-        <a href="{% url 'login' %}" class="btn btn-outline-light btn-sm">Iniciar Sesion</a>
-        <button class="navbar-toggler" type="button"
-                data-bs-toggle="collapse" data-bs-target="#mainNav"
-                aria-controls="mainNav" aria-expanded="false" aria-label="Menú">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-
-      <!-- Menú colapsable -->
-      <div id="mainNav" class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'registro' %}">Registro</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'habitaciones' %}">Habitaciones</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'galeria' %}">Galería</a></li>
-          <li class="nav-item"><a class="nav-link active" href="{% url 'login' %}">Iniciar sesión</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+{% include 'main/header.html' %}
 
   <!-- Encabezado -->
   <header class="container py-5">
