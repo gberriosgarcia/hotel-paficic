@@ -28,10 +28,11 @@ urlpatterns = [
     path('registro/', views.registro, name='registro'),
     path('habitaciones/', views.habitaciones, name='habitaciones'),
     path('galeria/', views.galeria, name='galeria'),
-    path('login/', EmailLoginView.as_view(), name='login'),  # <- aquí el cambio
+    path('login/', EmailLoginView.as_view(), name='login'),
     path('reservar/', views.reservar, name='reservar'),
     path('login/', EmailLoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(next_page='home'), name='logout'),  # <-- ESTA LÍNEA
+    path('logout/', LogoutView.as_view(next_page='home'), name='logout'), 
+    path('adminpage/', views.admin, name='adminpage'),
 ]
 
 

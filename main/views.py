@@ -22,6 +22,8 @@ def login(request):
 
 def reservar(request):
 	return render(request, 'main/reservar.html')
+def admin(request):
+	return render(request, 'main/adminpage.html')
 
 
 
