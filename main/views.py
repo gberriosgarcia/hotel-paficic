@@ -3,10 +3,44 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.db import IntegrityError, transaction
 from django.contrib.auth.hashers import make_password
+from django.utils import timezone
 from datetime import datetime
 from decimal import Decimal
-from django.utils import timezone
-from .models import Usuario, Reserva
+
+# Importa tus modelos reales
+from .models import Usuario, Reserva, Habitacion
+
+# ======================
+# Configuración precios y adelanto
+# ======================
+
+# Si la habitación no trae precio desde BD, se usan estos valores por tipo
+ROOM_PRICE = {'TURISTA': Decimal('90.00'), 'PREMIUM': Decimal('180.00')}
+DEPOSIT_RATE = Decimal('0.30')  # 30%
+
+def _normalizar_tipo(valor: str) -> str:
+    v = (valor or '').strip().lower()
+    if v in ('premium', 'premier', 'vip', 'suite'):
+        return 'PREMIUM'
+    return 'TURISTA'
+
+def _calcular_adelanto_por_tipo(tipo: str) -> Decimal:
+    base = ROOM_PRICE.get(_normalizar_tipo(tipo), ROOM_PRICE['TURISTA'])
+    return (base * DEPOSIT_RATE).quantize(Decimal('0.01'))
+
+def _calcular_adelanto_por_habitacion(habitacion) -> Decimal:
+    """
+    Si la habitación tiene precio en BD, usa 30% de ese precio.
+    Si no, cae al mapa por tipo (TURISTA/PREMIUM).
+    """
+    try:
+        if hasattr(habitacion, 'precio') and habitacion.precio is not None:
+            return (Decimal(habitacion.precio) * DEPOSIT_RATE).quantize(Decimal('0.01'))
+    except Exception:
+        pass
+    # Fallback por tipo si existe; si no, asume TURISTA
+    tipo = getattr(habitacion, 'tipo', 'TURISTA')
+    return _calcular_adelanto_por_tipo(tipo)
 
 # ======================
 # Vistas públicas básicas
@@ -72,37 +106,35 @@ def registro(request):
 # Reservas
 # ======================
 
-ROOM_PRICE = {'TURISTA': Decimal('90.00'), 'PREMIUM': Decimal('180.00')}
-DEPOSIT_RATE = Decimal('0.30')  # 30% obligatorio
-
-def _normalizar_tipo(valor: str) -> str:
-    v = (valor or '').strip().lower()
-    if v in ('premium', 'premier', 'vip', 'suite'):
-        return 'PREMIUM'
-    return 'TURISTA'
-
-def _calcular_adelanto(tipo: str):
-    base = ROOM_PRICE.get(_normalizar_tipo(tipo), ROOM_PRICE['TURISTA'])
-    adelanto = (base * DEPOSIT_RATE).quantize(Decimal('0.01'))
-    return base, adelanto
-
 def reservar(request):
+    """
+    Inserta en la tabla 'reservas' usando las columnas reales:
+    - cliente_id (desde Usuario por email del request.user)
+    - habitacion_id (desde un <select> en el form con name="habitacion_id")
+    - fecha_inicio (desde 'fecha_entrada')
+    - fecha_fin    (desde 'fecha_salida')
+    - estado       ('PENDIENTE')
+    - monto_adelanto (30% del precio de la habitación o del tipo)
+    """
     if request.method == 'POST':
-        nombre  = request.POST.get('nombre','').strip()
-        email   = request.POST.get('email','').strip().lower()
-        tel     = request.POST.get('telefono','').strip()
-        f1      = request.POST.get('fecha_entrada','')
-        f2      = request.POST.get('fecha_salida','')
-        tipo    = request.POST.get('tipo','').strip()
+        # Datos que SÍ se usan para grabar
+        f1      = request.POST.get('fecha_entrada', '')
+        f2      = request.POST.get('fecha_salida', '')
+        tipo    = (request.POST.get('tipo', '') or '').strip()
+        hab_id  = (request.POST.get('habitacion_id', '') or '').strip()
 
-        # FIX: usar timezone.now()
+        # Debug útil
         print("[DEBUG reservar]", timezone.now().isoformat(), {
-            "nombre": bool(nombre), "email": bool(email), "telefono": bool(tel),
-            "fecha_entrada": f1, "fecha_salida": f2, "tipo": tipo
+            "fecha_entrada": f1, "fecha_salida": f2, "tipo": tipo, "habitacion_id": hab_id
         })
 
-        if not (nombre and email and f1 and f2 and tipo):
-            messages.error(request, "Faltan datos obligatorios.")
+        # Validaciones básicas
+        if not request.user.is_authenticated:
+            messages.error(request, "Debes iniciar sesión para reservar.")
+            return redirect('login')
+
+        if not (f1 and f2 and hab_id):
+            messages.error(request, "Faltan datos obligatorios (fechas y habitación).")
             return redirect('reservar')
 
         try:
@@ -116,22 +148,39 @@ def reservar(request):
             messages.error(request, "La fecha de llegada no puede ser posterior a la de salida.")
             return redirect('reservar')
 
-        # Precio y adelanto (30%)
-        _, adelanto = _calcular_adelanto(tipo)
+        # Buscar cliente en tu tabla 'usuarios' por el email del usuario autenticado
+        cliente = Usuario.objects.filter(email=request.user.email).first()
+        if not cliente:
+            messages.error(request, "Tu cuenta no está vinculada al registro de clientes.")
+            return redirect('reservar')
 
-        # Guardar en tu tabla 'reservas'
-        Reserva.objects.create(
-            nombre=nombre,
-            email=email,
-            telefono=tel or None,
-            fecha_entrada=fi,
-            fecha_salida=ff,
-            tipo=_normalizar_tipo(tipo),
-            estado='PENDIENTE',
-            monto_adelanto=adelanto,
-        )
+        # Verificar habitación
+        habitacion = Habitacion.objects.filter(id=hab_id).first()
+        if not habitacion:
+            messages.error(request, "La habitación seleccionada no existe.")
+            return redirect('reservar')
+
+        # Calcular adelanto (30%). Si la habitación tiene precio, úsalo; si no, usa 'tipo'
+        adelanto = _calcular_adelanto_por_habitacion(habitacion)
+        # Si además quieres respetar el selector de tipo del formulario (por ejemplo, si la misma
+        # habitación puede tarificarse distinto), descomenta la línea siguiente:
+        # adelanto = _calcular_adelanto_por_tipo(tipo)
+
+        # Insertar en la tabla 'reservas' (columnas reales)
+        with transaction.atomic():
+            Reserva.objects.create(
+                cliente=cliente,              # FK -> cliente_id
+                habitacion=habitacion,        # FK -> habitacion_id
+                fecha_inicio=fi,
+                fecha_fin=ff,
+                estado='PENDIENTE',
+                monto_adelanto=adelanto,
+            )
 
         messages.success(request, f"Reserva registrada. Adelanto (30%): USD {adelanto}.")
         return redirect('home')
 
-    return render(request, 'main/reservar.html')
+    # GET: pasar habitaciones para el <select name="habitacion_id">
+    habitaciones = Habitacion.objects.all().order_by('id')
+    return render(request, 'main/reservar.html', {'habitaciones': habitaciones})
+
