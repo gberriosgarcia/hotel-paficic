@@ -121,7 +121,10 @@ def reservar(request):
         f1      = request.POST.get('fecha_entrada', '')
         f2      = request.POST.get('fecha_salida', '')
         tipo    = (request.POST.get('tipo', '') or '').strip()
-        hab_id  = (request.POST.get('habitacion_id', '') or '').strip()
+        if (tipo =='turista'):
+            hab_id  = 1
+        else:
+            hab_id  = 2     
 
         # Debug útil
         print("[DEBUG reservar]", timezone.now().isoformat(), {
